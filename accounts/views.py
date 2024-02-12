@@ -4,6 +4,10 @@ from django.contrib import messages, auth
 from .models import Account
 from django.contrib.auth.decorators import login_required
 
+from carts.views import _get_cart_id
+from carts.models import Cart, CartItem
+import requests
+
 
 def register(request):
     if request.method == "POST":
@@ -36,9 +40,27 @@ def login(request):
 
         user = auth.authenticate(email=email, password=password)
         if user is not None:
+            try:
+                cart = Cart.objects.get(cart_id=_get_cart_id(request))
+                is_cart_item_exists = CartItem.objects.filter(cart=cart).exists()
+                if is_cart_item_exists:
+                    cart_item = CartItem.objects.filter(cart=cart)
+                    for item in cart_item:
+                        item.user = user
+                        item.save()
+            except:
+                pass
             auth.login(request, user)
-            # messages.success(request, 'You are now logged in.')
-            return redirect('home')
+            messages.success(request, 'You are now logged in.')
+            url = request.META.get('HTTP_REFERER')
+            try:
+                query = requests.utils.urlparse(url).query
+                params = dict(x.split('=') for x in query.split('&'))
+                if 'next' in params:
+                    nextPage = params['next']
+                    return redirect(nextPage)
+            except:
+                return redirect('dashboard')
         else:
             messages.error(request, 'Invalid login credentials.')
             return redirect('login')
@@ -50,3 +72,8 @@ def logout(request):
     auth.logout(request)
     messages.success(request, 'You are logged out.')
     return redirect('login')
+
+
+@login_required(login_url = 'login')
+def dashboard(request):
+    return render(request, 'accounts/dashboard.html')
