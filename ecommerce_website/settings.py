@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
-from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,12 +20,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('SECRET_KEY')
+SECRET_KEY = 'bi8qbwt4wxu!%%28oa74wzjj04##d36e_^0)a5(6kdiv_yq2=n'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', default=False, cast=bool)
+DEBUG = True
 
-ALLOWED_HOSTS = ['django-greatkart-env.eba-szwmaif3.us-west-2.elasticbeanstalk.com']
+ALLOWED_HOSTS = ['django-greatkart-env.eba-szwmaif3.us-west-2.elasticbeanstalk.com', '*']
 
 
 # Application definition
